@@ -1,194 +1,299 @@
 package crud;
+
 import java.sql.*;
 import database.DBConnection;
-import entity.CartItem;
+import entity.Admin;
 import java.util.*;
-public class CartItemDAO {
-	
-	    public List<CartItem> getCartItemsByCartId(int cartId) {
-	        List<CartItem> items = new ArrayList<>();
-	        String query = "SELECT * FROM CartItem WHERE cartId = ?";
 
-	        try (Connection conn = DBConnection.getConnection();
-	             PreparedStatement stmt = conn.prepareStatement(query)) {
+public class AdminDAO {
+    
+    public Admin getAdminById(int adminId) {
+        Admin admin = null;
+        String query = "SELECT * FROM Admin WHERE adminId = ?";
 
-	            stmt.setInt(1, cartId);
-	            ResultSet rs = stmt.executeQuery();
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
 
-	            while (rs.next()) {
-	                CartItem item = new CartItem();
-	                item.setCartItemId(rs.getInt("cartItemId"));
-	                item.setCartId(rs.getInt("cartId"));
-	                item.setProductId(rs.getInt("productId"));
-	                item.setQuantity(rs.getInt("quantity"));
-	                items.add(item);
-	            }
+            stmt.setInt(1, adminId);
+            ResultSet rs = stmt.executeQuery();
 
-	        } catch (SQLException e) {
-	            e.printStackTrace();
-	        }
-	        return items;
-	    }
-	    public List<CartItem> getAllCartItems() {
-	        List<CartItem> items = new ArrayList<>();
-	        String query = "SELECT * FROM CartItem";
+            if (rs.next()) {
+                admin = new Admin();
+                admin.setAdminId(rs.getInt("adminId"));
+                admin.setName(rs.getString("name"));
+                admin.setEmail(rs.getString("email"));
+                admin.setPassword(rs.getString("password"));
+            }
 
-	        try (Connection conn = DBConnection.getConnection();
-	             Statement stmt = conn.createStatement();
-	             ResultSet rs = stmt.executeQuery(query)) {
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return admin;
+    }
 
-	            while (rs.next()) {
-	                CartItem item = new CartItem();
-	                item.setCartItemId(rs.getInt("cartItemId"));
-	                item.setCartId(rs.getInt("cartId"));
-	                item.setProductId(rs.getInt("productId"));
-	                item.setQuantity(rs.getInt("quantity"));
-	                items.add(item);
-	            }
+    public Admin getAdminByEmail(String email) {
+        Admin admin = null;
+        String query = "SELECT * FROM Admin WHERE email = ?";
 
-	        } catch (SQLException e) {
-	            e.printStackTrace();
-	        }
-	        return items;
-	    }
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
 
-	    public void addCartItem(CartItem item) {
-	        String query = "INSERT INTO CartItem VALUES (?, ?, ?, ?)";
+            stmt.setString(1, email);
+            ResultSet rs = stmt.executeQuery();
 
-	        try (Connection conn = DBConnection.getConnection();
-	             PreparedStatement stmt = conn.prepareStatement(query)) {
+            if (rs.next()) {
+                admin = new Admin();
+                admin.setAdminId(rs.getInt("adminId"));
+                admin.setName(rs.getString("name"));
+                admin.setEmail(rs.getString("email"));
+                admin.setPassword(rs.getString("password"));
+            }
 
-	            stmt.setInt(1, item.getCartItemId());
-	            stmt.setInt(2, item.getCartId());
-	            stmt.setInt(3, item.getProductId());
-	            stmt.setInt(4, item.getQuantity());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return admin;
+    }
 
-	            stmt.executeUpdate();
+    public List<Admin> getAllAdmins() {
+        List<Admin> admins = new ArrayList<>();
+        String query = "SELECT * FROM Admin";
 
-	        } catch (SQLException e) {
-	            e.printStackTrace();
-	        }
-	    }
+        try (Connection conn = DBConnection.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
 
-	    public void updateCartItem(CartItem item) {
-	        String query = "UPDATE CartItem SET cartId = ?, productId = ?, quantity = ? WHERE cartItemId = ?";
+            while (rs.next()) {
+                Admin admin = new Admin();
+                admin.setAdminId(rs.getInt("adminId"));
+                admin.setName(rs.getString("name"));
+                admin.setEmail(rs.getString("email"));
+                admin.setPassword(rs.getString("password"));
+                admins.add(admin);
+            }
 
-	        try (Connection conn = DBConnection.getConnection();
-	             PreparedStatement stmt = conn.prepareStatement(query)) {
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return admins;
+    }
 
-	            stmt.setInt(1, item.getCartId());
-	            stmt.setInt(2, item.getProductId());
-	            stmt.setInt(3, item.getQuantity());
-	            stmt.setInt(4, item.getCartItemId());
+    public boolean addAdmin(Admin admin) {
+        String query = "INSERT INTO Admin (name, email, password) VALUES (?, ?, ?)";
+        boolean success = false;
 
-	            stmt.executeUpdate();
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
 
-	        } catch (SQLException e) {
-	            e.printStackTrace();
-	        }
-	    }
+            stmt.setString(1, admin.getName());
+            stmt.setString(2, admin.getEmail());
+            stmt.setString(3, admin.getPassword());
 
-	    public void deleteCartItem(int cartItemId) {
-	        String query = "DELETE FROM CartItem WHERE cartItemId = ?";
+            int rowsAffected = stmt.executeUpdate();
+            if (rowsAffected > 0) {
+                ResultSet keys = stmt.getGeneratedKeys();
+                if (keys.next()) {
+                    admin.setAdminId(keys.getInt(1));
+                }
+                success = true;
+            }
 
-	        try (Connection conn = DBConnection.getConnection();
-	             PreparedStatement stmt = conn.prepareStatement(query)) {
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return success;
+    }
 
-	            stmt.setInt(1, cartItemId);
-	            stmt.executeUpdate();
+    public boolean updateAdmin(Admin admin) {
+        String query = "UPDATE Admin SET name = ?, email = ?, password = ? WHERE adminId = ?";
+        boolean success = false;
 
-	        } catch (SQLException e) {
-	            e.printStackTrace();
-	        }
-	    }
-	   
-	    public static void main(String[] args) {
-	    CartItemDAO dao = new CartItemDAO();
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setString(1, admin.getName());
+            stmt.setString(2, admin.getEmail());
+            stmt.setString(3, admin.getPassword());
+            stmt.setInt(4, admin.getAdminId());
+
+            int rowsAffected = stmt.executeUpdate();
+            success = rowsAffected > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return success;
+    }
+
+    public boolean deleteAdmin(int adminId) {
+        String query = "DELETE FROM Admin WHERE adminId = ?";
+        boolean success = false;
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setInt(1, adminId);
+            int rowsAffected = stmt.executeUpdate();
+            success = rowsAffected > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return success;
+    }
+
+    public boolean emailExists(String email) {
+        String query = "SELECT COUNT(*) FROM Admin WHERE email = ?";
+        boolean exists = false;
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setString(1, email);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                exists = rs.getInt(1) > 0;
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return exists;
+    }
+
+    public Admin authenticate(String email, String password) {
+        String query = "SELECT * FROM Admin WHERE email = ? AND password = ?";
+        Admin admin = null;
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setString(1, email);
+            stmt.setString(2, password);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                admin = new Admin();
+                admin.setAdminId(rs.getInt("adminId"));
+                admin.setName(rs.getString("name"));
+                admin.setEmail(rs.getString("email"));
+                admin.setPassword(rs.getString("password"));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return admin;
+    }
+
+    public static void main(String[] args) {
+        AdminDAO adminDAO = new AdminDAO();
         Scanner scanner = new Scanner(System.in);
 
         while (true) {
-            System.out.println("\n====== Cart Item Management ======");
-            System.out.println("1. Add Cart Item");
-            System.out.println("2. View All Cart Items");
-            System.out.println("3. View Cart Items by Cart ID");
-            System.out.println("4. Update Cart Item");
-            System.out.println("5. Delete Cart Item");
-            System.out.println("6. Exit");
+            System.out.println("\n====== Admin Management ======");
+            System.out.println("1. Add Admin");
+            System.out.println("2. View All Admins");
+            System.out.println("3. Find Admin by ID");
+            System.out.println("4. Update Admin");
+            System.out.println("5. Delete Admin");
+            System.out.println("6. Authenticate Admin");
+            System.out.println("7. Exit");
             System.out.print("Choose an option: ");
 
             int choice = scanner.nextInt();
+            scanner.nextLine();  // consume newline
 
             switch (choice) {
                 case 1:
-                    CartItem newItem = new CartItem();
-                    System.out.print("Enter CartItem ID: ");
-                    newItem.setCartItemId(scanner.nextInt());
+                    Admin newAdmin = new Admin();
 
-                    System.out.print("Enter Cart ID: ");
-                    newItem.setCartId(scanner.nextInt());
+                    System.out.print("Enter Name: ");
+                    newAdmin.setName(scanner.nextLine());
 
-                    System.out.print("Enter Product ID: ");
-                    newItem.setProductId(scanner.nextInt());
+                    System.out.print("Enter Email: ");
+                    newAdmin.setEmail(scanner.nextLine());
 
-                    System.out.print("Enter Quantity: ");
-                    newItem.setQuantity(scanner.nextInt());
+                    System.out.print("Enter Password: ");
+                    newAdmin.setPassword(scanner.nextLine());
 
-                    dao.addCartItem(newItem);
-                    System.out.println("Cart item added.");
+                    boolean added = adminDAO.addAdmin(newAdmin);
+                    if (added) {
+                        System.out.println("Admin added successfully! ID: " + newAdmin.getAdminId());
+                    } else {
+                        System.out.println("Failed to add admin.");
+                    }
                     break;
 
                 case 2:
-                    List<CartItem> allItems = dao.getAllCartItems();
-                    for (CartItem item : allItems) {
-                        System.out.println(item.getCartItemId() + " - Cart: " + item.getCartId() + ", Product: " + item.getProductId() + ", Qty: " + item.getQuantity());
+                    List<Admin> admins = adminDAO.getAllAdmins();
+                    System.out.println("\nAll Admins:");
+                    for (Admin admin : admins) {
+                        System.out.println(admin.getAdminId() + " - " + admin.getName() + " - " + admin.getEmail());
                     }
                     break;
 
                 case 3:
-                    System.out.print("Enter Cart ID: ");
-                    int cartId = scanner.nextInt();
-                    List<CartItem> cartItems = dao.getCartItemsByCartId(cartId);
-                    for (CartItem item : cartItems) {
-                        System.out.println(item.getCartItemId() + " - Product: " + item.getProductId() + ", Qty: " + item.getQuantity());
+                    System.out.print("Enter Admin ID: ");
+                    int id = scanner.nextInt();
+                    Admin found = adminDAO.getAdminById(id);
+                    if (found != null) {
+                        System.out.println("Admin Found: " + found.getName() + " - " + found.getEmail());
+                    } else {
+                        System.out.println("Admin not found.");
                     }
                     break;
 
                 case 4:
-                    CartItem updateItem = new CartItem();
-                    System.out.print("Enter CartItem ID to Update: ");
-                    updateItem.setCartItemId(scanner.nextInt());
+                    Admin updateAdmin = new Admin();
+                    System.out.print("Enter Admin ID to Update: ");
+                    updateAdmin.setAdminId(scanner.nextInt());
+                    scanner.nextLine();
 
-                    System.out.print("Enter New Cart ID: ");
-                    updateItem.setCartId(scanner.nextInt());
+                    System.out.print("Enter New Name: ");
+                    updateAdmin.setName(scanner.nextLine());
 
-                    System.out.print("Enter New Product ID: ");
-                    updateItem.setProductId(scanner.nextInt());
+                    System.out.print("Enter New Email: ");
+                    updateAdmin.setEmail(scanner.nextLine());
 
-                    System.out.print("Enter New Quantity: ");
-                    updateItem.setQuantity(scanner.nextInt());
+                    System.out.print("Enter New Password: ");
+                    updateAdmin.setPassword(scanner.nextLine());
 
-                    dao.updateCartItem(updateItem);
-                    System.out.println("Cart item updated.");
+                    boolean updated = adminDAO.updateAdmin(updateAdmin);
+                    System.out.println(updated ? "Admin updated successfully!" : "Failed to update admin.");
                     break;
 
                 case 5:
-                    System.out.print("Enter CartItem ID to Delete: ");
+                    System.out.print("Enter Admin ID to Delete: ");
                     int deleteId = scanner.nextInt();
-                    dao.deleteCartItem(deleteId);
-                    System.out.println("Cart item deleted.");
+                    boolean deleted = adminDAO.deleteAdmin(deleteId);
+                    System.out.println(deleted ? "Admin deleted successfully!" : "Failed to delete admin.");
                     break;
 
                 case 6:
+                    System.out.print("Enter Email: ");
+                    String email = scanner.nextLine();
+                    System.out.print("Enter Password: ");
+                    String password = scanner.nextLine();
+
+                    Admin authenticated = adminDAO.authenticate(email, password);
+                    if (authenticated != null) {
+                        System.out.println("Welcome, " + authenticated.getName());
+                    } else {
+                        System.out.println("Invalid credentials.");
+                    }
+                    break;
+
+                case 7:
                     System.out.println("Exiting...");
                     scanner.close();
                     System.exit(0);
                     break;
 
                 default:
-                    System.out.println("Invalid option.");
+                    System.out.println("Invalid choice.");
             }
         }
     }
-	}
-
-
+}
