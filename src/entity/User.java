@@ -1,22 +1,15 @@
 package entity;
-
+import java.util.*;
 public class User {
-
-	private int userId;
-    private String name;
-    private String email;
+    private int userId;
     private String password;
-    private int phone;
+    private String phone;
     private String shippingAddress;
     private String billingAddress;
+    private List<Order> orders = new ArrayList<>();
+    private String name;
+    private String email;
 
-    // Getters and Setters
-    public int getUserId() {
-        return userId;
-    }
-    public void setUserId(int userId) {
-        this.userId = userId;
-    }
     public String getName() {
         return name;
     }
@@ -29,16 +22,22 @@ public class User {
     public void setEmail(String email) {
         this.email = email;
     }
+    public int getUserId() {
+        return userId;
+    }
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
     public String getPassword() {
         return password;
     }
     public void setPassword(String password) {
         this.password = password;
     }
-    public int getPhone() {
+    public String getPhone() {
         return phone;
     }
-    public void setPhone(int phone) {
+    public void setPhone(String phone) {
         this.phone = phone;
     }
     public String getShippingAddress() {
@@ -52,5 +51,15 @@ public class User {
     }
     public void setBillingAddress(String billingAddress) {
         this.billingAddress = billingAddress;
+    }
+    public void addOrder(Order order) {
+        orders.add(order);
+    }
+
+    public void printOrders() {
+        System.out.println("Orders for user: " + getName());
+        for (Order o : orders) {
+            System.out.println("Order ID: " + o.getOrderId() + ", Total: " + o.getTotalAmount());
+        }
     }
 }
