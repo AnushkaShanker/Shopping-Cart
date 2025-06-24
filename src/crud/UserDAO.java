@@ -21,7 +21,7 @@ public class UserDAO {
                 user.setName(rs.getString("name"));
                 user.setEmail(rs.getString("email"));
                 user.setPassword(rs.getString("password"));
-                user.setPhone(rs.getInt("phone"));
+                user.setPhone(rs.getString("phone"));
                 user.setShippingAddress(rs.getString("shippingAddress"));
                 user.setBillingAddress(rs.getString("billingAddress"));
             }
@@ -42,7 +42,7 @@ public class UserDAO {
             stmt.setString(2, user.getName());
             stmt.setString(3, user.getEmail());
             stmt.setString(4, user.getPassword());
-            stmt.setInt(5, user.getPhone());
+            stmt.setString(5, user.getPhone());
             stmt.setString(6, user.getShippingAddress());
             stmt.setString(7, user.getBillingAddress());
 
@@ -63,7 +63,7 @@ public class UserDAO {
             stmt.setString(1, user.getName());
             stmt.setString(2, user.getEmail());
             stmt.setString(3, user.getPassword());
-            stmt.setInt(4, user.getPhone());
+            stmt.setString(4, user.getPhone());
             stmt.setString(5, user.getShippingAddress());
             stmt.setString(6, user.getBillingAddress());
             stmt.setInt(7, user.getUserId());
@@ -122,7 +122,7 @@ public class UserDAO {
                         newUser.setPassword(scanner.nextLine());
 
                         System.out.print("Enter Phone: ");
-                        newUser.setPhone(scanner.nextInt());
+                        newUser.setPhone(scanner.nextLine());
 
                         scanner.nextLine();
                         System.out.print("Enter Shipping Address: ");
@@ -167,7 +167,7 @@ public class UserDAO {
                         updateUser.setPassword(scanner.nextLine());
 
                         System.out.print("Enter New Phone: ");
-                        updateUser.setPhone(scanner.nextInt());
+                        updateUser.setPhone(scanner.nextLine());
 
                         scanner.nextLine();
                         System.out.print("Enter New Shipping Address: ");
