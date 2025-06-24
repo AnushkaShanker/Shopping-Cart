@@ -45,4 +45,7 @@ public class Shipment {
 	    public void setStatus(String status) {
 	        this.status = status;
 	    }
+	    public void track() {
+	        System.out.println("Tracking Shipment ID: " + shipmentId + ", Status: " + status + ", Carrier: " + carrier);
+	    }
 }
