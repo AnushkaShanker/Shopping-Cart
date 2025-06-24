@@ -4,7 +4,9 @@ import java.sql.*;
 import database.DBConnection;
 import entity.Admin;
 import java.util.*;
+
 public class AdminDAO {
+    
     public Admin getAdminById(int adminId) {
         Admin admin = null;
         String query = "SELECT * FROM Admin WHERE adminId = ?";
@@ -28,6 +30,7 @@ public class AdminDAO {
         }
         return admin;
     }
+
     public Admin getAdminByEmail(String email) {
         Admin admin = null;
         String query = "SELECT * FROM Admin WHERE email = ?";
@@ -52,7 +55,6 @@ public class AdminDAO {
         return admin;
     }
 
-    // Get all admins
     public List<Admin> getAllAdmins() {
         List<Admin> admins = new ArrayList<>();
         String query = "SELECT * FROM Admin";
@@ -76,21 +78,25 @@ public class AdminDAO {
         return admins;
     }
 
-    // Add new admin
     public boolean addAdmin(Admin admin) {
-        String query = "INSERT INTO Admin (adminId, name, email, password) VALUES (?, ?, ?, ?)";
+        String query = "INSERT INTO Admin (name, email, password) VALUES (?, ?, ?)";
         boolean success = false;
 
         try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
+             PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
 
-            stmt.setInt(1, admin.getAdminId());
-            stmt.setString(2, admin.getName());
-            stmt.setString(3, admin.getEmail());
-            stmt.setString(4, admin.getPassword());
+            stmt.setString(1, admin.getName());
+            stmt.setString(2, admin.getEmail());
+            stmt.setString(3, admin.getPassword());
 
             int rowsAffected = stmt.executeUpdate();
-            success = rowsAffected > 0;
+            if (rowsAffected > 0) {
+                ResultSet keys = stmt.getGeneratedKeys();
+                if (keys.next()) {
+                    admin.setAdminId(keys.getInt(1));
+                }
+                success = true;
+            }
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -98,7 +104,6 @@ public class AdminDAO {
         return success;
     }
 
-    // Update admin
     public boolean updateAdmin(Admin admin) {
         String query = "UPDATE Admin SET name = ?, email = ?, password = ? WHERE adminId = ?";
         boolean success = false;
@@ -120,7 +125,6 @@ public class AdminDAO {
         return success;
     }
 
-    // Delete admin
     public boolean deleteAdmin(int adminId) {
         String query = "DELETE FROM Admin WHERE adminId = ?";
         boolean success = false;
@@ -138,7 +142,6 @@ public class AdminDAO {
         return success;
     }
 
-    // Check if email already exists (for validation)
     public boolean emailExists(String email) {
         String query = "SELECT COUNT(*) FROM Admin WHERE email = ?";
         boolean exists = false;
@@ -159,7 +162,6 @@ public class AdminDAO {
         return exists;
     }
 
-    // Authenticate admin (for login)
     public Admin authenticate(String email, String password) {
         String query = "SELECT * FROM Admin WHERE email = ? AND password = ?";
         Admin admin = null;
@@ -184,6 +186,7 @@ public class AdminDAO {
         }
         return admin;
     }
+
     public static void main(String[] args) {
         AdminDAO adminDAO = new AdminDAO();
         Scanner scanner = new Scanner(System.in);
@@ -205,9 +208,6 @@ public class AdminDAO {
             switch (choice) {
                 case 1:
                     Admin newAdmin = new Admin();
-                    System.out.print("Enter Admin ID: ");
-                    newAdmin.setAdminId(scanner.nextInt());
-                    scanner.nextLine();
 
                     System.out.print("Enter Name: ");
                     newAdmin.setName(scanner.nextLine());
@@ -219,7 +219,11 @@ public class AdminDAO {
                     newAdmin.setPassword(scanner.nextLine());
 
                     boolean added = adminDAO.addAdmin(newAdmin);
-                    System.out.println(added ? "Admin added successfully!" : "Failed to add admin.");
+                    if (added) {
+                        System.out.println("Admin added successfully! ID: " + newAdmin.getAdminId());
+                    } else {
+                        System.out.println("Failed to add admin.");
+                    }
                     break;
 
                 case 2:
