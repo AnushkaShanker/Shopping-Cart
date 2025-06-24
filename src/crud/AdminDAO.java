@@ -3,11 +3,8 @@ package crud;
 import java.sql.*;
 import database.DBConnection;
 import entity.Admin;
-import java.util.ArrayList;
-import java.util.List;
-
+import java.util.*;
 public class AdminDAO {
-    // Get admin by ID
     public Admin getAdminById(int adminId) {
         Admin admin = null;
         String query = "SELECT * FROM Admin WHERE adminId = ?";
@@ -31,8 +28,6 @@ public class AdminDAO {
         }
         return admin;
     }
-
-    // Get admin by email (useful for login)
     public Admin getAdminByEmail(String email) {
         Admin admin = null;
         String query = "SELECT * FROM Admin WHERE email = ?";
@@ -188,5 +183,113 @@ public class AdminDAO {
             e.printStackTrace();
         }
         return admin;
+    }
+    public static void main(String[] args) {
+        AdminDAO adminDAO = new AdminDAO();
+        Scanner scanner = new Scanner(System.in);
+
+        while (true) {
+            System.out.println("\n====== Admin Management ======");
+            System.out.println("1. Add Admin");
+            System.out.println("2. View All Admins");
+            System.out.println("3. Find Admin by ID");
+            System.out.println("4. Update Admin");
+            System.out.println("5. Delete Admin");
+            System.out.println("6. Authenticate Admin");
+            System.out.println("7. Exit");
+            System.out.print("Choose an option: ");
+
+            int choice = scanner.nextInt();
+            scanner.nextLine();  // consume newline
+
+            switch (choice) {
+                case 1:
+                    Admin newAdmin = new Admin();
+                    System.out.print("Enter Admin ID: ");
+                    newAdmin.setAdminId(scanner.nextInt());
+                    scanner.nextLine();
+
+                    System.out.print("Enter Name: ");
+                    newAdmin.setName(scanner.nextLine());
+
+                    System.out.print("Enter Email: ");
+                    newAdmin.setEmail(scanner.nextLine());
+
+                    System.out.print("Enter Password: ");
+                    newAdmin.setPassword(scanner.nextLine());
+
+                    boolean added = adminDAO.addAdmin(newAdmin);
+                    System.out.println(added ? "Admin added successfully!" : "Failed to add admin.");
+                    break;
+
+                case 2:
+                    List<Admin> admins = adminDAO.getAllAdmins();
+                    System.out.println("\nAll Admins:");
+                    for (Admin admin : admins) {
+                        System.out.println(admin.getAdminId() + " - " + admin.getName() + " - " + admin.getEmail());
+                    }
+                    break;
+
+                case 3:
+                    System.out.print("Enter Admin ID: ");
+                    int id = scanner.nextInt();
+                    Admin found = adminDAO.getAdminById(id);
+                    if (found != null) {
+                        System.out.println("Admin Found: " + found.getName() + " - " + found.getEmail());
+                    } else {
+                        System.out.println("Admin not found.");
+                    }
+                    break;
+
+                case 4:
+                    Admin updateAdmin = new Admin();
+                    System.out.print("Enter Admin ID to Update: ");
+                    updateAdmin.setAdminId(scanner.nextInt());
+                    scanner.nextLine();
+
+                    System.out.print("Enter New Name: ");
+                    updateAdmin.setName(scanner.nextLine());
+
+                    System.out.print("Enter New Email: ");
+                    updateAdmin.setEmail(scanner.nextLine());
+
+                    System.out.print("Enter New Password: ");
+                    updateAdmin.setPassword(scanner.nextLine());
+
+                    boolean updated = adminDAO.updateAdmin(updateAdmin);
+                    System.out.println(updated ? "Admin updated successfully!" : "Failed to update admin.");
+                    break;
+
+                case 5:
+                    System.out.print("Enter Admin ID to Delete: ");
+                    int deleteId = scanner.nextInt();
+                    boolean deleted = adminDAO.deleteAdmin(deleteId);
+                    System.out.println(deleted ? "Admin deleted successfully!" : "Failed to delete admin.");
+                    break;
+
+                case 6:
+                    System.out.print("Enter Email: ");
+                    String email = scanner.nextLine();
+                    System.out.print("Enter Password: ");
+                    String password = scanner.nextLine();
+
+                    Admin authenticated = adminDAO.authenticate(email, password);
+                    if (authenticated != null) {
+                        System.out.println("Welcome, " + authenticated.getName());
+                    } else {
+                        System.out.println("Invalid credentials.");
+                    }
+                    break;
+
+                case 7:
+                    System.out.println("Exiting...");
+                    scanner.close();
+                    System.exit(0);
+                    break;
+
+                default:
+                    System.out.println("Invalid choice.");
+            }
+        }
     }
 }
