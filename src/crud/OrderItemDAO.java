@@ -3,7 +3,6 @@ package crud;
 import java.sql.*;
 import database.DBConnection;
 import entity.OrderItem;
-import entity.Product;
 import java.util.*;
 
 public class OrderItemDAO {
