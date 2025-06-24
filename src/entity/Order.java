@@ -10,6 +10,18 @@ public class Order {
 	    private String shippingAddress;
 
 	    // Getters and Setters
+	    public void printInvoice() {
+	        System.out.println("Invoice for Order ID: " + orderId);
+	        System.out.println("User ID: " + userId);
+	        System.out.println("Date: " + orderDate);
+	        System.out.println("Total Amount: " + totalAmount);
+	        System.out.println("Payment Status: " + paymentStatus);
+	        System.out.println("Order Status: " + orderStatus);
+	        System.out.println("Shipping Address: " + shippingAddress);
+	    }
+	    public void placeOrder() {
+	        System.out.println("Order placed with standard shipping.");
+	    }
 	    public int getOrderId() {
 	        return orderId;
 	    }
@@ -52,4 +64,11 @@ public class Order {
 	    public void setShippingAddress(String shippingAddress) {
 	        this.shippingAddress = shippingAddress;
 	    }
+	    public class ExpressOrder extends Order {
+	        @Override
+	        public void placeOrder() {
+	            System.out.println("Express Order placed with 1-day delivery.");
+	        }
+	    }
 }
+
