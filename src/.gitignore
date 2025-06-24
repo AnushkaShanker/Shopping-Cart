@@ -1,0 +1,2 @@
+# Ignore personal DB config
+db.properties
