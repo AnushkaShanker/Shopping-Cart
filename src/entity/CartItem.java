@@ -1,33 +1,41 @@
 package entity;
-package entity;
-public class Admin{
-    private int adminId;
-    private String password;
-    private String name;
-    private String email;
+public class CartItem {
+	 private int cartItemId;
+	    private int cartId;
+	    private Product product;
+	    private int quantity;
 
-    public String getName() {
-        return name;
-    }
-    public void setName(String name) {
-        this.name = name;
-    }
-    public String getEmail() {
-        return email;
-    }
-    public void setEmail(String email) {
-        this.email = email;
-    }
-    public int getAdminId() {
-        return adminId;
-    }
-    public void setAdminId(int adminId) {
-        this.adminId = adminId;
-    }
-    public String getPassword() {
-        return password;
-    }
-    public void setPassword(String password) {
-        this.password = password;
-    }
+	    // Getters and Setters
+	    public int getCartItemId() {
+	        return cartItemId;
+	    }
+	    public void setCartItemId(int cartItemId) {
+	        this.cartItemId = cartItemId;
+	    }
+	    public int getCartId() {
+	        return cartId;
+	    }
+	    public void setCartId(int cartId) {
+	        this.cartId = cartId;
+	    }
+	
+	    public int getQuantity() {
+	        return quantity;
+	    }
+	    public void setQuantity(int quantity) {
+	        this.quantity = quantity;
+	    }
+	    public Product getProduct() {
+	        return product;
+	    }
+	    public void setProduct(Product product) {
+	        this.product = product;
+	    }
+	    public void printCartItem() {
+	        System.out.println("CartItem ID: " + cartItemId + ", Product ID: " + product.getProductId() + ", Product Name: " + product.getName() +
+	                ", Price: " + product.getPrice() + ", Quantity: " + quantity);
+	    }
 }
+
+
+
