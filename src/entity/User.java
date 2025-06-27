@@ -2,64 +2,30 @@ package entity;
 import java.util.*;
 public class User {
     private int userId;
-    private String password;
-    private String phone;
-    private String shippingAddress;
-    private String billingAddress;
-    private List<Order> orders = new ArrayList<>();
-    private String name;
+    private String username;
     private String email;
+    private List<CartItem> cart;
 
-    public String getName() {
-        return name;
-    }
-    public void setName(String name) {
-        this.name = name;
-    }
-    public String getEmail() {
-        return email;
-    }
-    public void setEmail(String email) {
+    public User(int userId, String username, String email, List<CartItem> cart) {
+        this.userId = userId;
+        this.username = username;
         this.email = email;
+        this.cart = cart;
     }
+
     public int getUserId() {
         return userId;
     }
-    public void setUserId(int userId) {
-        this.userId = userId;
-    }
-    public String getPassword() {
-        return password;
-    }
-    public void setPassword(String password) {
-        this.password = password;
-    }
-    public String getPhone() {
-        return phone;
-    }
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-    public String getShippingAddress() {
-        return shippingAddress;
-    }
-    public void setShippingAddress(String shippingAddress) {
-        this.shippingAddress = shippingAddress;
-    }
-    public String getBillingAddress() {
-        return billingAddress;
-    }
-    public void setBillingAddress(String billingAddress) {
-        this.billingAddress = billingAddress;
-    }
-    public void addOrder(Order order) {
-        orders.add(order);
+
+    public String getUsername() {
+        return username;
     }
 
-    public void printOrders() {
-        System.out.println("Orders for user: " + getName());
-        for (Order o : orders) {
-            System.out.println("Order ID: " + o.getOrderId() + ", Total: " + o.getTotalAmount());
-        }
+    public String getEmail() {
+        return email;
+    }
+
+    public List<CartItem> getCart() {
+        return cart;
     }
 }
